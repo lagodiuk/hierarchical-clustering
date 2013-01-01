@@ -17,7 +17,7 @@ public abstract class Hierarchical {
 
 		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
 
-		Map<TypedTreeNode<T>, Map<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
+		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
 
 		while (clusters.size() > 1) {
 			this.iteration(distances, clusters);
@@ -31,7 +31,7 @@ public abstract class Hierarchical {
 
 		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
 
-		Map<TypedTreeNode<T>, Map<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
+		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
 
 		while (clusters.size() > 1) {
 			this.iteration(distances, clusters);
@@ -40,29 +40,29 @@ public abstract class Hierarchical {
 		return clusters.keySet().iterator().next();
 	}
 
-	private <T> void iteration(Map<T, Map<T, Double>> distances, Map<TypedTreeNode<T>, Map<TypedTreeNode<T>, Double>> clusters) {
+	private <T> void iteration(Map<T, Map<T, Double>> distances, Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters) {
 		TypedTreeNode<T> clust1 = null;
 		TypedTreeNode<T> clust2 = null;
 		double minDist = Double.MAX_VALUE;
 		for (TypedTreeNode<T> base : clusters.keySet()) {
-			Map<TypedTreeNode<T>, Double> baseDist = clusters.get(base);
+			SortedValuesMap<TypedTreeNode<T>, Double> baseDist = clusters.get(base);
 
-			for (TypedTreeNode<T> target : baseDist.keySet()) {
-				double currDist = baseDist.get(target);
-				if (currDist < minDist) {
-					clust1 = base;
-					clust2 = target;
-					minDist = currDist;
-				}
+			TypedTreeNode<T> smallestDistNode = baseDist.getKeyWithSmallestValue();
+
+			double currDist = baseDist.get(smallestDistNode);
+			if (currDist < minDist) {
+				clust1 = base;
+				clust2 = smallestDistNode;
+				minDist = currDist;
 			}
 		}
 		clusters.remove(clust1);
 		clusters.remove(clust2);
 		TypedTreeNode<T> comb = this.combine(clust1, clust2);
 
-		Map<TypedTreeNode<T>, Double> combDist = new LinkedHashMap<TypedTreeNode<T>, Double>();
+		SortedValuesMap<TypedTreeNode<T>, Double> combDist = new SortedValuesMap<TypedTreeNode<T>, Double>();
 		for (TypedTreeNode<T> base : clusters.keySet()) {
-			Map<TypedTreeNode<T>, Double> baseDist = clusters.get(base);
+			SortedValuesMap<TypedTreeNode<T>, Double> baseDist = clusters.get(base);
 
 			baseDist.remove(clust1);
 			baseDist.remove(clust2);
@@ -81,14 +81,14 @@ public abstract class Hierarchical {
 		return parent;
 	}
 
-	private <T> Map<TypedTreeNode<T>, Map<TypedTreeNode<T>, Double>> initialClusters(Map<T, Map<T, Double>> distances,
+	private <T> Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> initialClusters(Map<T, Map<T, Double>> distances,
 			List<TypedTreeNode<T>> nodes) {
-		Map<TypedTreeNode<T>, Map<TypedTreeNode<T>, Double>> clustNodes =
-				new LinkedHashMap<TypedTreeNode<T>, Map<TypedTreeNode<T>, Double>>();
+		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clustNodes =
+				new LinkedHashMap<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>>();
 
 		for (int i = 0; i < nodes.size(); i++) {
 			TypedTreeNode<T> currNode = nodes.get(i);
-			Map<TypedTreeNode<T>, Double> currNodeDist = new LinkedHashMap<TypedTreeNode<T>, Double>();
+			SortedValuesMap<TypedTreeNode<T>, Double> currNodeDist = new SortedValuesMap<TypedTreeNode<T>, Double>();
 
 			for (int j = 0; j < nodes.size(); j++) {
 				if (i != j) {

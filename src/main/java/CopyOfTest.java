@@ -12,11 +12,6 @@ import com.lagodiuk.clustering.TypedTreeNode;
 public class CopyOfTest {
 
 	public static void main(String[] args) {
-		Integer[] arr = new Integer[100];
-		for (int i = 0; i < 100; i++) {
-			arr[i] = (int) Math.round(Math.random() * 120);
-		}
-
 		Hierarchical clusterizer = new SingleLink();
 		TypedTreeNode<Integer> root = clusterizer.clusterize(
 				new DistanceCalculator<Integer>() {
@@ -25,9 +20,8 @@ public class CopyOfTest {
 						return Math.abs(base - target);
 					}
 				},
-				// 1, 1, 2, 3, 10, 11, 16, 17, 171, 175, 200, 205, 206, 207,
-				// 208);
-				arr);
+				0, 0, 2, 3, 10, 11, 16, 17, 171, 175, 200, 205, 206, 208, 209);
+
 		System.out.println(root.prettyPrint());
 
 		JTree tree = new JTree(root);
