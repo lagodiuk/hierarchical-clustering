@@ -20,6 +20,7 @@ public class CopyOfTest {
 						return Math.abs(base - target);
 					}
 				},
+				5.0,
 				0, 0, 2, 3, 10, 11, 16, 17, 171, 175, 200, 205, 206, 208, 209);
 
 		System.out.println(root.prettyPrint());

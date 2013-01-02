@@ -13,6 +13,7 @@ public class Test {
 	public static void main(String[] args) {
 		Hierarchical clusterizer = new SingleLink();
 		TypedTreeNode<Num> root = clusterizer.clusterize(
+				null,
 				new Num(1),
 				new Num(2),
 				new Num(10),
@@ -24,7 +25,9 @@ public class Test {
 				new Num(171),
 				new Num(175),
 				new Num(201),
-				new Num(210));
+				new Num(210),
+				new Num(212),
+				new Num(213));
 		System.out.println(root.prettyPrint());
 
 		JTree tree = new JTree(root);

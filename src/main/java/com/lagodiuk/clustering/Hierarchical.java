@@ -1,6 +1,8 @@
 package com.lagodiuk.clustering;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,10 @@ public abstract class Hierarchical {
 			TypedTreeNode<T> targetNode,
 			Map<T, Map<T, Double>> distances);
 
-	public <T> TypedTreeNode<T> clusterize(final DistanceCalculator<T> distanceCalculator, T... items) {
+	public <T> TypedTreeNode<T> clusterize(
+			DistanceCalculator<T> distanceCalculator,
+			Double conjunctionDist,
+			T... items) {
 		Map<T, Map<T, Double>> distances = this.calculateDistances(distanceCalculator, items);
 
 		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
@@ -20,13 +25,15 @@ public abstract class Hierarchical {
 		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
 
 		while (clusters.size() > 1) {
-			this.iteration(distances, clusters);
+			this.iteration(distances, clusters, conjunctionDist);
 		}
 
 		return clusters.keySet().iterator().next();
 	}
 
-	public <T extends Distanceable<T>> TypedTreeNode<T> clusterize(T... items) {
+	public <T extends Distanceable<T>> TypedTreeNode<T> clusterize(
+			Double conjunctionDist,
+			T... items) {
 		Map<T, Map<T, Double>> distances = this.calculateDistances(items);
 
 		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
@@ -34,13 +41,16 @@ public abstract class Hierarchical {
 		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
 
 		while (clusters.size() > 1) {
-			this.iteration(distances, clusters);
+			this.iteration(distances, clusters, conjunctionDist);
 		}
 
 		return clusters.keySet().iterator().next();
 	}
 
-	private <T> void iteration(Map<T, Map<T, Double>> distances, Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters) {
+	private <T> void iteration(
+			Map<T, Map<T, Double>> distances,
+			Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters,
+			Double conjunctionDist) {
 		TypedTreeNode<T> clust1 = null;
 		TypedTreeNode<T> clust2 = null;
 		double minDist = Double.MAX_VALUE;
@@ -58,7 +68,7 @@ public abstract class Hierarchical {
 		}
 		clusters.remove(clust1);
 		clusters.remove(clust2);
-		TypedTreeNode<T> comb = this.combine(clust1, clust2);
+		TypedTreeNode<T> comb = this.combine(clust1, clust2, minDist, conjunctionDist);
 
 		SortedValuesMap<TypedTreeNode<T>, Double> combDist = new SortedValuesMap<TypedTreeNode<T>, Double>();
 		for (TypedTreeNode<T> base : clusters.keySet()) {
@@ -74,10 +84,30 @@ public abstract class Hierarchical {
 		clusters.put(comb, combDist);
 	}
 
-	private <T> TypedTreeNode<T> combine(TypedTreeNode<T> clust1, TypedTreeNode<T> clust2) {
+	private <T> TypedTreeNode<T> combine(TypedTreeNode<T> clust1, TypedTreeNode<T> clust2, double dist, Double minDist) {
 		TypedTreeNode<T> parent = new TypedTreeNode<T>();
-		parent.add(clust1);
-		parent.add(clust2);
+		if ((minDist != null) && (dist <= minDist)) {
+			Enumeration<?> nodesEnumeration = clust1.breadthFirstEnumeration();
+			for (Object nodeObj : Collections.list(nodesEnumeration)) {
+				@SuppressWarnings("unchecked")
+				TypedTreeNode<T> node = (TypedTreeNode<T>) nodeObj;
+				if (node.isLeaf()) {
+					parent.add(node);
+				}
+			}
+
+			nodesEnumeration = clust2.breadthFirstEnumeration();
+			for (Object nodeObj : Collections.list(nodesEnumeration)) {
+				@SuppressWarnings("unchecked")
+				TypedTreeNode<T> node = (TypedTreeNode<T>) nodeObj;
+				if (node.isLeaf()) {
+					parent.add(node);
+				}
+			}
+		} else {
+			parent.add(clust1);
+			parent.add(clust2);
+		}
 		return parent;
 	}
 
