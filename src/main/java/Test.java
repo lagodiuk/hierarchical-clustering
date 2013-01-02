@@ -14,6 +14,7 @@ public class Test {
 		Hierarchical clusterizer = new SingleLink();
 		TypedTreeNode<Num> root = clusterizer.clusterize(
 				null,
+				null,
 				new Num(1),
 				new Num(2),
 				new Num(10),

@@ -14,39 +14,77 @@ public abstract class Hierarchical {
 			TypedTreeNode<T> targetNode,
 			Map<T, Map<T, Double>> distances);
 
+	/**
+	 * If <b>(conjunctionDist != null)</b> and distance between <b>cluster_1</b>
+	 * and <b>cluster_2</b> is less than <b>conjunctionDist</b> - it means, that
+	 * clusters will be <b>merged</b>: <br/>
+	 * (a, b) + (c, d) -> (a, b, c, d) <br/>
+	 * <br/>
+	 * Otherwise - clusters will be <b>consolidated</b>: <br/>
+	 * (a, b) + (c, d) -> ((a, b), (c, d))
+	 */
 	public <T> TypedTreeNode<T> clusterize(
 			DistanceCalculator<T> distanceCalculator,
 			Double conjunctionDist,
+			Double thresholdSimDist,
 			T... items) {
 
 		Map<T, Map<T, Double>> distances = this.calculateDistances(distanceCalculator, items);
-		return this.doClustering(conjunctionDist, distances, items);
+		return this.doClustering(conjunctionDist, thresholdSimDist, distances, items);
 	}
 
+	/**
+	 * If <b>(conjunctionDist != null)</b> and distance between <b>cluster_1</b>
+	 * and <b>cluster_2</b> is less than <b>conjunctionDist</b> - it means, that
+	 * clusters will be <b>merged</b>: <br/>
+	 * (a, b) + (c, d) -> (a, b, c, d) <br/>
+	 * <br/>
+	 * Otherwise - clusters will be <b>consolidated</b>: <br/>
+	 * (a, b) + (c, d) -> ((a, b), (c, d))
+	 */
 	public <T extends Distanceable<T>> TypedTreeNode<T> clusterize(
 			Double conjunctionDist,
+			Double thresholdSimDist,
 			T... items) {
 
 		Map<T, Map<T, Double>> distances = this.calculateDistances(items);
-		return this.doClustering(conjunctionDist, distances, items);
+		return this.doClustering(conjunctionDist, thresholdSimDist, distances, items);
 	}
 
-	private <T> TypedTreeNode<T> doClustering(Double conjunctionDist, Map<T, Map<T, Double>> distances, T... items) {
+	private <T> TypedTreeNode<T> doClustering(Double conjunctionDist, Double thresholdSimDist, Map<T, Map<T, Double>> distances, T... items) {
 		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
 
 		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
 
 		while (clusters.size() > 1) {
-			this.iteration(distances, clusters, conjunctionDist);
+			double distance = this.yetAnotherIteration(distances, clusters, conjunctionDist, thresholdSimDist);
+			if ((thresholdSimDist != null) && (distance > thresholdSimDist)) {
+				break;
+			}
 		}
 
-		return clusters.keySet().iterator().next();
+		TypedTreeNode<T> root = this.getRootCluster(clusters);
+		return root;
 	}
 
-	private <T> void iteration(
+	private <T> TypedTreeNode<T> getRootCluster(Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters) {
+		TypedTreeNode<T> root = null;
+		if (clusters.size() > 1) {
+			root = new TypedTreeNode<T>();
+			for (TypedTreeNode<T> cluster : clusters.keySet()) {
+				root.add(cluster);
+			}
+		} else {
+			root = clusters.keySet().iterator().next();
+		}
+		return root;
+	}
+
+	private <T> double yetAnotherIteration(
 			Map<T, Map<T, Double>> distances,
 			Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters,
-			Double conjunctionDist) {
+			Double conjunctionDist,
+			Double thresholdSimDist) {
 		TypedTreeNode<T> clust1 = null;
 		TypedTreeNode<T> clust2 = null;
 		double minDist = Double.MAX_VALUE;
@@ -62,6 +100,11 @@ public abstract class Hierarchical {
 				minDist = currDist;
 			}
 		}
+
+		if ((thresholdSimDist != null) && (minDist > thresholdSimDist)) {
+			return minDist;
+		}
+
 		clusters.remove(clust1);
 		clusters.remove(clust2);
 		TypedTreeNode<T> comb = this.combine(clust1, clust2, minDist, conjunctionDist);
@@ -78,6 +121,8 @@ public abstract class Hierarchical {
 			combDist.put(base, dist);
 		}
 		clusters.put(comb, combDist);
+
+		return minDist;
 	}
 
 	private <T> TypedTreeNode<T> combine(TypedTreeNode<T> clust1, TypedTreeNode<T> clust2, double dist, Double minDist) {
