@@ -18,24 +18,20 @@ public abstract class Hierarchical {
 			DistanceCalculator<T> distanceCalculator,
 			Double conjunctionDist,
 			T... items) {
+
 		Map<T, Map<T, Double>> distances = this.calculateDistances(distanceCalculator, items);
-
-		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
-
-		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
-
-		while (clusters.size() > 1) {
-			this.iteration(distances, clusters, conjunctionDist);
-		}
-
-		return clusters.keySet().iterator().next();
+		return this.doClustering(conjunctionDist, distances, items);
 	}
 
 	public <T extends Distanceable<T>> TypedTreeNode<T> clusterize(
 			Double conjunctionDist,
 			T... items) {
-		Map<T, Map<T, Double>> distances = this.calculateDistances(items);
 
+		Map<T, Map<T, Double>> distances = this.calculateDistances(items);
+		return this.doClustering(conjunctionDist, distances, items);
+	}
+
+	private <T> TypedTreeNode<T> doClustering(Double conjunctionDist, Map<T, Map<T, Double>> distances, T... items) {
 		List<TypedTreeNode<T>> nodes = this.nodesFromItems(items);
 
 		Map<TypedTreeNode<T>, SortedValuesMap<TypedTreeNode<T>, Double>> clusters = this.initialClusters(distances, nodes);
