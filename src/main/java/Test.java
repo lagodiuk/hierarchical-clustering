@@ -5,13 +5,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
 import com.lagodiuk.clustering.Hierarchical;
-import com.lagodiuk.clustering.SingleLink;
+import com.lagodiuk.clustering.SingleLinkage;
 import com.lagodiuk.clustering.TypedTreeNode;
 
 public class Test {
 
 	public static void main(String[] args) {
-		Hierarchical clusterizer = new SingleLink();
+		Hierarchical clusterizer = new SingleLinkage();
 		TypedTreeNode<Num> root = clusterizer.clusterize(
 				null,
 				null,

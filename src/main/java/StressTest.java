@@ -7,7 +7,7 @@ import javax.swing.JTree;
 
 import com.lagodiuk.clustering.DistanceCalculator;
 import com.lagodiuk.clustering.Hierarchical;
-import com.lagodiuk.clustering.SingleLink;
+import com.lagodiuk.clustering.SingleLinkage;
 import com.lagodiuk.clustering.TypedTreeNode;
 
 public class StressTest {
@@ -23,7 +23,7 @@ public class StressTest {
 			arr[i] = rnd.nextInt(1000);
 		}
 
-		Hierarchical clusterizer = new SingleLink();
+		Hierarchical clusterizer = new SingleLinkage();
 		TypedTreeNode<Integer> root = clusterizer.clusterize(
 				new DistanceCalculator<Integer>() {
 					@Override
