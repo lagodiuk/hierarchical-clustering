@@ -1,15 +1,28 @@
 package com.lagodiuk.clustering;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import static com.google.common.base.Predicates.notNull;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.transform;
+
 import java.util.Enumeration;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import com.google.common.base.Function;
 
 public class TypedTreeNode<T> extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1L;
+
+	private final Function<Object, T> nodeToItem = new Function<Object, T>() {
+		@SuppressWarnings("unchecked")
+		@Override
+		public T apply(Object input) {
+			TypedTreeNode<T> node = (TypedTreeNode<T>) input;
+			return (T) node.getUserObject();
+		}
+	};
 
 	public TypedTreeNode() {
 		super();
@@ -31,17 +44,34 @@ public class TypedTreeNode<T> extends DefaultMutableTreeNode {
 		return this.itemsFromNodesEnumeration(this.depthFirstEnumeration());
 	}
 
-	@SuppressWarnings("unchecked")
-	private Iterable<T> itemsFromNodesEnumeration(final Enumeration<?> enumeration) {
-		List<?> nodes = Collections.list(enumeration);
-		List<T> items = new ArrayList<T>(nodes.size());
-		for (Object node : nodes) {
-			T item = (T) ((TypedTreeNode<T>) node).getUserObject();
-			if (item != null) {
-				items.add(item);
+	private Iterable<T> itemsFromNodesEnumeration(Enumeration<?> enumeration) {
+		return filter(
+				transform(this.enumerationToIterable(enumeration), this.nodeToItem),
+				notNull());
+	}
+
+	private Iterable<Object> enumerationToIterable(final Enumeration<?> enumeration) {
+		return new Iterable<Object>() {
+			@Override
+			public Iterator<Object> iterator() {
+				return new Iterator<Object>() {
+					@Override
+					public boolean hasNext() {
+						return enumeration.hasMoreElements();
+					}
+
+					@Override
+					public Object next() {
+						return enumeration.nextElement();
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
 			}
-		}
-		return items;
+		};
 	}
 
 	@SuppressWarnings("unchecked")
