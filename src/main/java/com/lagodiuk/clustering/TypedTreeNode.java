@@ -46,11 +46,11 @@ public class TypedTreeNode<T> extends DefaultMutableTreeNode {
 
 	private Iterable<T> itemsFromNodesEnumeration(Enumeration<?> enumeration) {
 		return filter(
-				transform(this.enumerationToIterable(enumeration), this.nodeToItem),
+				transform(enumerationToIterable(enumeration), this.nodeToItem),
 				notNull());
 	}
 
-	private Iterable<Object> enumerationToIterable(final Enumeration<?> enumeration) {
+	public static Iterable<Object> enumerationToIterable(final Enumeration<?> enumeration) {
 		return new Iterable<Object>() {
 			@Override
 			public Iterator<Object> iterator() {
