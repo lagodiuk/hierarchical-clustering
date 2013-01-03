@@ -1,0 +1,47 @@
+import java.awt.BorderLayout;
+import java.util.Random;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+
+import com.lagodiuk.clustering.DistanceCalculator;
+import com.lagodiuk.clustering.Hierarchical;
+import com.lagodiuk.clustering.SingleLink;
+import com.lagodiuk.clustering.TypedTreeNode;
+
+public class StressTest {
+
+	public static void main(String[] args) {
+		Random rnd = new Random();
+		Integer[] arr = new Integer[500];
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = rnd.nextInt(1000);
+		}
+
+		Hierarchical clusterizer = new SingleLink();
+		TypedTreeNode<Integer> root = clusterizer.clusterize(
+				new DistanceCalculator<Integer>() {
+					@Override
+					public double distance(Integer base, Integer target) {
+						return Math.abs(base - target);
+					}
+				},
+				2.0,
+				2.0,
+				arr);
+
+		System.out.println(root.prettyPrint());
+
+		JTree tree = new JTree(root);
+
+		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(new JScrollPane(tree), BorderLayout.CENTER);
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+		frame.setSize(275, 350);
+		frame.setVisible(true);
+	}
+}
