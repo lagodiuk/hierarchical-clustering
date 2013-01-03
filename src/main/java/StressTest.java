@@ -12,9 +12,13 @@ import com.lagodiuk.clustering.TypedTreeNode;
 
 public class StressTest {
 
+	/**
+	 * -Xms512m <br/>
+	 * -Xmx512m <br/>
+	 */
 	public static void main(String[] args) {
 		Random rnd = new Random();
-		Integer[] arr = new Integer[500];
+		Integer[] arr = new Integer[1000];
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = rnd.nextInt(1000);
 		}
