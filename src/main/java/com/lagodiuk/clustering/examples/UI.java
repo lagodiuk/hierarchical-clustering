@@ -1,4 +1,5 @@
 package com.lagodiuk.clustering.examples;
+
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -9,7 +10,7 @@ import com.lagodiuk.clustering.TypedTreeNode;
 
 public class UI {
 
-	public static void simpleVisualize(TypedTreeNode<Integer> root, int width, int height) {
+	public static JFrame simpleVisualize(TypedTreeNode<?> root, int width, int height) {
 		JTree tree = new JTree(root);
 
 		JFrame frame = new JFrame();
@@ -22,6 +23,7 @@ public class UI {
 		// put frame at center of screen
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		return frame;
 	}
 
 }
