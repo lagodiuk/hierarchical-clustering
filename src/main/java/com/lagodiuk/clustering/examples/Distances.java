@@ -1,3 +1,4 @@
+package com.lagodiuk.clustering.examples;
 import com.lagodiuk.clustering.DistanceCalculator;
 
 public class Distances {

@@ -1,3 +1,5 @@
+package com.lagodiuk.clustering.examples;
+
 import com.lagodiuk.clustering.Hierarchical;
 import com.lagodiuk.clustering.SingleLinkage;
 import com.lagodiuk.clustering.TypedTreeNode;

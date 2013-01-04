@@ -1,3 +1,5 @@
+package com.lagodiuk.clustering.examples;
+
 import java.util.Random;
 
 import com.lagodiuk.clustering.Hierarchical;

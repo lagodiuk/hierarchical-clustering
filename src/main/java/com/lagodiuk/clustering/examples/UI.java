@@ -1,3 +1,4 @@
+package com.lagodiuk.clustering.examples;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
