@@ -18,4 +18,13 @@ public class CentroidLinkage extends Hierarchical {
 		return dist / itemsCount;
 	}
 
+	@Override
+	protected <T> double fastDistance(TypedTreeNode<T> clust1, double clust1Dist, TypedTreeNode<T> clust2, double clust2Dist, TypedTreeNode<T> comb,
+			TypedTreeNode<T> target, Map<T, Map<T, Double>> distances) {
+		int clust1ItemsCount = clust1.itemsCount();
+		int clust2ItemsCount = clust2.itemsCount();
+		return ((clust1Dist * clust1ItemsCount) + (clust2Dist * clust2ItemsCount))
+				/ (clust1ItemsCount + clust2ItemsCount);
+	}
+
 }

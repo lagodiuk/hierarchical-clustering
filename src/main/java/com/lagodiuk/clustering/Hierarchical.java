@@ -9,9 +9,19 @@ import java.util.Map;
 
 public abstract class Hierarchical {
 
+	@Deprecated
 	protected abstract <T> double distance(
 			TypedTreeNode<T> baseNode,
 			TypedTreeNode<T> targetNode,
+			Map<T, Map<T, Double>> distances);
+
+	protected abstract <T> double fastDistance(
+			TypedTreeNode<T> clust1,
+			double clust1Dist,
+			TypedTreeNode<T> clust2,
+			double clust2Dist,
+			TypedTreeNode<T> comb,
+			TypedTreeNode<T> target,
 			Map<T, Map<T, Double>> distances);
 
 	/**
@@ -113,10 +123,16 @@ public abstract class Hierarchical {
 		for (TypedTreeNode<T> base : clusters.keySet()) {
 			SortedValuesMap<TypedTreeNode<T>, Double> baseDist = clusters.get(base);
 
+			double clust1Dist = baseDist.get(clust1);
+			double clust2Dist = baseDist.get(clust2);
+
+			// double dist = this.distance(base, comb, distances);
+			double dist = this.fastDistance(clust1, clust1Dist, clust2,
+					clust2Dist, comb, base, distances);
+
 			baseDist.remove(clust1);
 			baseDist.remove(clust2);
 
-			double dist = this.distance(base, comb, distances);
 			baseDist.put(comb, dist);
 			combDist.put(base, dist);
 		}
