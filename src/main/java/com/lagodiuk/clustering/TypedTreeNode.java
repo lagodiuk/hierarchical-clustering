@@ -102,4 +102,9 @@ public class TypedTreeNode<T> extends DefaultMutableTreeNode {
 		sb.append('}');
 		return sb.toString();
 	}
+
+	// @Override
+	// public String toString() {
+	// return this.prettyPrint();
+	// }
 }

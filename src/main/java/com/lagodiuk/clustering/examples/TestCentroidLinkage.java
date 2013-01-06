@@ -12,7 +12,7 @@ public class TestCentroidLinkage {
 				clusterizer.clusterize(
 						Distances.levenshteinDistCalc(),
 						0.3,
-						0.6,
+						0.3,
 						strings());
 
 		UI.simpleVisualize(root, 300, 400);

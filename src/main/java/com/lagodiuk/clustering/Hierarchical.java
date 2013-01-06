@@ -1,8 +1,6 @@
 package com.lagodiuk.clustering;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +125,7 @@ public abstract class Hierarchical {
 			double clust2Dist = baseDist.get(clust2);
 
 			// double dist = this.distance(base, comb, distances);
-			double dist = this.fastDistance(clust1, clust1Dist, clust2,
-					clust2Dist, comb, base, distances);
+			double dist = this.fastDistance(clust1, clust1Dist, clust2, clust2Dist, comb, base, distances);
 
 			baseDist.remove(clust1);
 			baseDist.remove(clust2);
@@ -144,27 +141,30 @@ public abstract class Hierarchical {
 	private <T> TypedTreeNode<T> combine(TypedTreeNode<T> clust1, TypedTreeNode<T> clust2, double dist, Double minDist) {
 		TypedTreeNode<T> parent = new TypedTreeNode<T>();
 		if ((minDist != null) && (dist <= minDist)) {
-			Enumeration<?> nodesEnumeration = clust1.breadthFirstEnumeration();
-			for (Object nodeObj : Collections.list(nodesEnumeration)) {
-				@SuppressWarnings("unchecked")
-				TypedTreeNode<T> node = (TypedTreeNode<T>) nodeObj;
-				if (node.isLeaf()) {
-					parent.add(node);
-				}
+			for (T item : clust1.breadthFirstItems()) {
+				parent.add(new TypedTreeNode<T>(item));
 			}
 
-			nodesEnumeration = clust2.breadthFirstEnumeration();
-			for (Object nodeObj : Collections.list(nodesEnumeration)) {
-				@SuppressWarnings("unchecked")
-				TypedTreeNode<T> node = (TypedTreeNode<T>) nodeObj;
-				if (node.isLeaf()) {
-					parent.add(node);
-				}
+			for (T item : clust2.breadthFirstItems()) {
+				parent.add(new TypedTreeNode<T>(item));
 			}
 		} else {
 			parent.add(clust1);
 			parent.add(clust2);
 		}
+
+		if (clust1.itemsCount() == 0) {
+			throw new RuntimeException();
+		}
+
+		if (clust2.itemsCount() == 0) {
+			throw new RuntimeException();
+		}
+
+		if (parent.itemsCount() == 0) {
+			throw new RuntimeException();
+		}
+
 		return parent;
 	}
 
