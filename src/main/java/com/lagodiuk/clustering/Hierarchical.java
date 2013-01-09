@@ -1,18 +1,17 @@
 package com.lagodiuk.clustering;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class Hierarchical {
 
-	protected abstract <T> double distance(
-			TypedTreeNode<T> baseNode,
-			TypedTreeNode<T> targetNode,
-			Map<T, Map<T, Double>> distances);
+	protected abstract <T> double fastDistance(
+			TypedTreeNode<T> clust1,
+			double clust1Dist,
+			TypedTreeNode<T> clust2,
+			double clust2Dist);
 
 	/**
 	 * If <b>(conjunctionDist != null)</b> and distance between <b>cluster_1</b>
@@ -113,10 +112,14 @@ public abstract class Hierarchical {
 		for (TypedTreeNode<T> base : clusters.keySet()) {
 			SortedValuesMap<TypedTreeNode<T>, Double> baseDist = clusters.get(base);
 
+			double clust1Dist = baseDist.get(clust1);
+			double clust2Dist = baseDist.get(clust2);
+
+			double dist = this.fastDistance(clust1, clust1Dist, clust2, clust2Dist);
+
 			baseDist.remove(clust1);
 			baseDist.remove(clust2);
 
-			double dist = this.distance(base, comb, distances);
 			baseDist.put(comb, dist);
 			combDist.put(base, dist);
 		}
@@ -128,22 +131,12 @@ public abstract class Hierarchical {
 	private <T> TypedTreeNode<T> combine(TypedTreeNode<T> clust1, TypedTreeNode<T> clust2, double dist, Double minDist) {
 		TypedTreeNode<T> parent = new TypedTreeNode<T>();
 		if ((minDist != null) && (dist <= minDist)) {
-			Enumeration<?> nodesEnumeration = clust1.breadthFirstEnumeration();
-			for (Object nodeObj : Collections.list(nodesEnumeration)) {
-				@SuppressWarnings("unchecked")
-				TypedTreeNode<T> node = (TypedTreeNode<T>) nodeObj;
-				if (node.isLeaf()) {
-					parent.add(node);
-				}
+			for (T item : clust1.breadthFirstItems()) {
+				parent.add(new TypedTreeNode<T>(item));
 			}
 
-			nodesEnumeration = clust2.breadthFirstEnumeration();
-			for (Object nodeObj : Collections.list(nodesEnumeration)) {
-				@SuppressWarnings("unchecked")
-				TypedTreeNode<T> node = (TypedTreeNode<T>) nodeObj;
-				if (node.isLeaf()) {
-					parent.add(node);
-				}
+			for (T item : clust2.breadthFirstItems()) {
+				parent.add(new TypedTreeNode<T>(item));
 			}
 		} else {
 			parent.add(clust1);
@@ -165,7 +158,7 @@ public abstract class Hierarchical {
 				if (i != j) {
 					TypedTreeNode<T> targetNode = nodes.get(j);
 
-					double distance = this.distance(currNode, targetNode, distances);
+					double distance = distances.get(currNode.getItem()).get(targetNode.getItem());
 					currNodeDist.put(targetNode, distance);
 				}
 			}

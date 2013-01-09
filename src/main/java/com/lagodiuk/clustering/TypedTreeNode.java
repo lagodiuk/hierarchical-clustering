@@ -36,6 +36,20 @@ public class TypedTreeNode<T> extends DefaultMutableTreeNode {
 		super(item, allowsChildren);
 	}
 
+	@SuppressWarnings("unchecked")
+	public T getItem() {
+		return (T) this.getUserObject();
+	}
+
+	public int itemsCount() {
+		int count = 0;
+		for (@SuppressWarnings("unused")
+		T item : this.breadthFirstItems()) {
+			count += 1;
+		}
+		return count;
+	}
+
 	public Iterable<T> breadthFirstItems() {
 		return this.itemsFromNodesEnumeration(this.breadthFirstEnumeration());
 	}
