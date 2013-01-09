@@ -26,10 +26,10 @@ public class SortedValuesMap<K, V extends Comparable<V>> implements Map<K, V> {
 	@Override
 	public V remove(Object key) {
 		V value = this.keyToValue.get(key);
+		this.keyToValue.remove(key);
 		if (value == null) {
 			return value;
 		}
-		this.keyToValue.remove(key);
 		this.valueToKeys.get(value).remove(key);
 		return value;
 	}
