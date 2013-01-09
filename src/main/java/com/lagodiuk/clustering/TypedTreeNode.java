@@ -36,6 +36,11 @@ public class TypedTreeNode<T> extends DefaultMutableTreeNode {
 		super(item, allowsChildren);
 	}
 
+	@SuppressWarnings("unchecked")
+	public T getItem() {
+		return (T) this.getUserObject();
+	}
+
 	public int itemsCount() {
 		int count = 0;
 		for (@SuppressWarnings("unused")

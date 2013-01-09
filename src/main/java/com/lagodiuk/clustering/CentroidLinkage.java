@@ -24,20 +24,9 @@ public class CentroidLinkage extends Hierarchical {
 			TypedTreeNode<T> comb, TypedTreeNode<T> target, Map<T, Map<T, Double>> distances) {
 		double clust1ItemsCount = clust1.itemsCount();
 		double clust2ItemsCount = clust2.itemsCount();
-		System.out.println(clust1Dist);
-		System.out.println(clust2Dist);
 		double dist =
 				((clust1Dist * clust1ItemsCount) + (clust2Dist * clust2ItemsCount))
 						/ (clust1ItemsCount + clust2ItemsCount);
-
-		if (Double.isNaN(dist)) {
-			System.out.println(clust1ItemsCount);
-			System.out.println(clust2ItemsCount);
-			clust1.itemsCount();
-			clust2.itemsCount();
-			throw new RuntimeException();
-		}
-
 		return dist;
 	}
 

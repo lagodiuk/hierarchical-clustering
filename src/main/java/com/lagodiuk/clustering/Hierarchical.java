@@ -152,19 +152,6 @@ public abstract class Hierarchical {
 			parent.add(clust1);
 			parent.add(clust2);
 		}
-
-		if (clust1.itemsCount() == 0) {
-			throw new RuntimeException();
-		}
-
-		if (clust2.itemsCount() == 0) {
-			throw new RuntimeException();
-		}
-
-		if (parent.itemsCount() == 0) {
-			throw new RuntimeException();
-		}
-
 		return parent;
 	}
 
@@ -181,7 +168,7 @@ public abstract class Hierarchical {
 				if (i != j) {
 					TypedTreeNode<T> targetNode = nodes.get(j);
 
-					double distance = this.distance(currNode, targetNode, distances);
+					double distance = distances.get(currNode.getItem()).get(targetNode.getItem());
 					currNodeDist.put(targetNode, distance);
 				}
 			}
