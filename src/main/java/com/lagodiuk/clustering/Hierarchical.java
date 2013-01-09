@@ -7,20 +7,11 @@ import java.util.Map;
 
 public abstract class Hierarchical {
 
-	@Deprecated
-	protected abstract <T> double distance(
-			TypedTreeNode<T> baseNode,
-			TypedTreeNode<T> targetNode,
-			Map<T, Map<T, Double>> distances);
-
 	protected abstract <T> double fastDistance(
 			TypedTreeNode<T> clust1,
 			double clust1Dist,
 			TypedTreeNode<T> clust2,
-			double clust2Dist,
-			TypedTreeNode<T> comb,
-			TypedTreeNode<T> target,
-			Map<T, Map<T, Double>> distances);
+			double clust2Dist);
 
 	/**
 	 * If <b>(conjunctionDist != null)</b> and distance between <b>cluster_1</b>
@@ -124,8 +115,7 @@ public abstract class Hierarchical {
 			double clust1Dist = baseDist.get(clust1);
 			double clust2Dist = baseDist.get(clust2);
 
-			// double dist = this.distance(base, comb, distances);
-			double dist = this.fastDistance(clust1, clust1Dist, clust2, clust2Dist, comb, base, distances);
+			double dist = this.fastDistance(clust1, clust1Dist, clust2, clust2Dist);
 
 			baseDist.remove(clust1);
 			baseDist.remove(clust2);
