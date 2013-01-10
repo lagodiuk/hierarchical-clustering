@@ -1,16 +1,3 @@
-rss-clustering
-==============
-
-Clustering rss feeds content
-
-### add maven dependency ###
-<ol>
-<li> git clone https://github.com/lagodiuk/hierarchical-clustering.git </li>
-<li> mvn -f hierarchical-clustering/pom.xml install </li>
-</ol>
-
-### the simplest example ###
-```java
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -61,4 +48,3 @@ public class Example {
 		return frame;
 	}
 }
-```
