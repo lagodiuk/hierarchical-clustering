@@ -1,19 +1,19 @@
 package com.lagodiuk.clustering.examples;
 
-import com.lagodiuk.clustering.CentroidLinkage;
-import com.lagodiuk.clustering.Hierarchical;
+import com.lagodiuk.clustering.HierarchicalClusteringBuilder;
 import com.lagodiuk.clustering.TypedTreeNode;
 
 public class TestCentroidLinkage {
 
 	public static void main(String[] args) {
-		Hierarchical clusterizer = new CentroidLinkage();
 		TypedTreeNode<String> root =
-				clusterizer.clusterize(
-						Distances.levenshteinDistCalc(),
-						0.3,
-						0.3,
-						strings());
+				HierarchicalClusteringBuilder
+						.<String> newBuilder()
+						.setDistanceCalculator(Distances.levenshteinDistCalc())
+						.setConjunctionDistance(0.3)
+						.setThresholdSimilarityDistance(0.3)
+						.setItems(strings())
+						.doCentroidLinkage();
 
 		UI.simpleVisualize(root, 300, 400);
 	}

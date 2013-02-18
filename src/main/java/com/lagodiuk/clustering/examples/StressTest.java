@@ -2,8 +2,7 @@ package com.lagodiuk.clustering.examples;
 
 import java.util.Random;
 
-import com.lagodiuk.clustering.Hierarchical;
-import com.lagodiuk.clustering.SingleLinkage;
+import com.lagodiuk.clustering.HierarchicalClusteringBuilder;
 import com.lagodiuk.clustering.TypedTreeNode;
 
 public class StressTest {
@@ -13,15 +12,15 @@ public class StressTest {
 	 * -Xmx512m <br/>
 	 */
 	public static void main(String[] args) {
-		Integer[] arr = generateData();
 
-		Hierarchical clusterizer = new SingleLinkage();
 		TypedTreeNode<Integer> root =
-				clusterizer.clusterize(
-						Distances.integerDistCalc(),
-						2.0,
-						2.0,
-						arr);
+				HierarchicalClusteringBuilder
+						.<Integer> newBuilder()
+						.setDistanceCalculator(Distances.integerDistCalc())
+						.setConjunctionDistance(2.0)
+						.setThresholdSimilarityDistance(2.0)
+						.setItems(generateData())
+						.doSingleLinkage();
 
 		UI.simpleVisualize(root, 300, 400);
 	}

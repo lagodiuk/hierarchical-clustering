@@ -1,7 +1,7 @@
 rss-clustering
 ==============
 
-Clustering rss feeds content
+Hierarchical clustering algorithms: single linkage, complete linkage, centroid linkage
 
 ### add maven dependency ###
 <ol>
@@ -18,29 +18,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
 import com.lagodiuk.clustering.DistanceCalculator;
-import com.lagodiuk.clustering.Hierarchical;
-import com.lagodiuk.clustering.SingleLinkage;
+import com.lagodiuk.clustering.HierarchicalClusteringBuilder;
 import com.lagodiuk.clustering.TypedTreeNode;
 
 public class Example {
 
 	public static void main(String[] args) {
-		DistanceCalculator<Integer> distCalc =
-				new DistanceCalculator<Integer>() {
-					@Override
-					public double distance(Integer base, Integer target) {
-						return Math.abs(base - target);
-					}
-				};
-
-		Hierarchical clusterizer = new SingleLinkage();
 
 		TypedTreeNode<Integer> root =
-				clusterizer.clusterize(
-						distCalc,
-						null,
-						null,
-						0, 0, 10, 20, 11, 2, 5, 6, 21);
+				HierarchicalClusteringBuilder
+						.<Integer> newBuilder()
+						.setDistanceCalculator(
+								new DistanceCalculator<Integer>() {
+									@Override
+									public double distance(Integer base, Integer target) {
+										return Math.abs(base - target);
+									}
+								})
+						.setItems(0, 0, 10, 20, 11, 2, 5, 6, 21)
+						.doSingleLinkage();
 
 		display(root, 300, 400);
 	}
